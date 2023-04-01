@@ -1,38 +1,32 @@
 package main
 
 import (
-	"bytes"
-	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
-	"os"
 	"strconv"
 	"time"
 
 	"github.com/glebpepega/goodvibesbot/decoder"
+	"github.com/glebpepega/goodvibesbot/encoder"
+	"github.com/glebpepega/goodvibesbot/link"
+	"github.com/glebpepega/goodvibesbot/photo"
 	"github.com/glebpepega/goodvibesbot/update"
-	"github.com/joho/godotenv"
-)
-
-var (
-	url string
 )
 
 func main() {
-	err := godotenv.Load("X:/mycode/goodvibesbot/.env")
-	if err != nil {
-		log.Fatal("Error loading .env file")
-	}
-	tgToken := os.Getenv("t")
-	url = "https://api.telegram.org/bot" + tgToken
 	structResp := update.NewResponse()
 	offset := 0
 	updateChan := make(chan update.Update)
 
 	go func() {
-		for v := range updateChan {
-			fmt.Println(v)
+		for update := range updateChan {
+			if len(update.Message.Entities) > 0 {
+				if update.Message.Text == "/get" {
+					ph := photo.New()
+					ph.Send(update.Message.Chat.Id)
+				}
+			}
 		}
 	}()
 
@@ -44,12 +38,8 @@ func main() {
 
 func getUpdates(structResp *update.UpdateResponse, offset *int, ch chan update.Update) {
 	offsetStr := fmt.Sprintf(`{"offset":"%s"}`, strconv.Itoa(*offset))
-	offsetJSON, err := json.Marshal(offsetStr)
-	if err != nil {
-		log.Fatal(err)
-	}
-	body := bytes.NewBuffer(offsetJSON)
-	jsonResp, err := http.Post(url+"/getUpdates", "application/json", body)
+	body := encoder.EncodeToJSONBuffer(offsetStr)
+	jsonResp, err := http.Post(link.Link()+"/getUpdates", "application/json", body)
 	if err != nil {
 		log.Fatal(err)
 	}
