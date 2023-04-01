@@ -37,11 +37,12 @@ func main() {
 	}()
 
 	for {
-		getUpdates(structResp, &offset, &updateChan)
+		getUpdates(structResp, &offset, updateChan)
 	}
+
 }
 
-func getUpdates(structResp *update.UpdateResponse, offset *int, ch *chan update.Update) {
+func getUpdates(structResp *update.UpdateResponse, offset *int, ch chan update.Update) {
 	offsetStr := fmt.Sprintf(`{"offset":"%s"}`, strconv.Itoa(*offset))
 	offsetJSON, err := json.Marshal(offsetStr)
 	if err != nil {
@@ -58,14 +59,9 @@ func getUpdates(structResp *update.UpdateResponse, offset *int, ch *chan update.
 		}
 	}()
 	decoder.DecodeFromJSON(jsonResp.Body, structResp)
-	if *offset == 0 {
-		for _, v := range structResp.Result {
-			*ch <- v
-		}
-	}
-	if *offset < structResp.Result[len(structResp.Result)-1].Update_id+1 {
+	if len(structResp.Result) != 0 && *offset < structResp.Result[len(structResp.Result)-1].Update_id+1 {
 		if *offset != 0 {
-			*ch <- structResp.Result[len(structResp.Result)-1]
+			ch <- structResp.Result[len(structResp.Result)-1]
 		}
 		*offset = structResp.Result[len(structResp.Result)-1].Update_id + 1
 	}
