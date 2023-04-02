@@ -61,9 +61,11 @@ func getQuoteFromInternet() string {
 	if err != nil {
 		log.Fatal(err)
 	}
-	if err := jsonResp.Body.Close(); err != nil {
-		log.Fatal(err)
-	}
+	defer func() {
+		if err := jsonResp.Body.Close(); err != nil {
+			log.Fatal(err)
+		}
+	}()
 	decoder.DecodeFromJSON(jsonResp.Body, &quote)
 	result := fmt.Sprintf("\"%s\" — %s", quote[0].Quote, quote[0].Author)
 	return result
@@ -75,9 +77,11 @@ func getImgFromInternet() string {
 	if err != nil {
 		log.Fatal(err)
 	}
-	if err := jsonResp.Body.Close(); err != nil {
-		log.Fatal(err)
-	}
+	defer func() {
+		if err := jsonResp.Body.Close(); err != nil {
+			log.Fatal(err)
+		}
+	}()
 	decoder.DecodeFromJSON(jsonResp.Body, &url)
 	return url[0]
 }

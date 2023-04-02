@@ -57,7 +57,9 @@ func (cq *CallbackQuery) Answer() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	if err := resp.Body.Close(); err != nil {
-		log.Fatal(err)
-	}
+	defer func() {
+		if err := resp.Body.Close(); err != nil {
+			log.Fatal(err)
+		}
+	}()
 }

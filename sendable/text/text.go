@@ -25,7 +25,9 @@ func (t *Text) Send(chatID int, message string) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	if err := resp.Body.Close(); err != nil {
-		log.Fatal(err)
-	}
+	defer func() {
+		if err := resp.Body.Close(); err != nil {
+			log.Fatal(err)
+		}
+	}()
 }
