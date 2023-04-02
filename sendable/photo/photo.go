@@ -61,6 +61,9 @@ func getQuoteFromInternet() string {
 	if err != nil {
 		log.Fatal(err)
 	}
+	if err := jsonResp.Body.Close(); err != nil {
+		log.Fatal(err)
+	}
 	decoder.DecodeFromJSON(jsonResp.Body, &quote)
 	result := fmt.Sprintf("\"%s\" — %s", quote[0].Quote, quote[0].Author)
 	return result
@@ -70,6 +73,9 @@ func getImgFromInternet() string {
 	var url []string
 	jsonResp, err := http.Get("http://shibe.online/api/shibes?count=1&urls=true&httpsUrls=true")
 	if err != nil {
+		log.Fatal(err)
+	}
+	if err := jsonResp.Body.Close(); err != nil {
 		log.Fatal(err)
 	}
 	decoder.DecodeFromJSON(jsonResp.Body, &url)

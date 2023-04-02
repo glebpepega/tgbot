@@ -53,8 +53,11 @@ func (cq *CallbackQuery) Answer() {
 		Text:              "🥰",
 	}
 	body := encoder.EncodeToJSONBuffer(cbqa)
-	_, err := http.Post(link.Link()+"/answerCallbackQuery", "application/json", body)
+	resp, err := http.Post(link.Link()+"/answerCallbackQuery", "application/json", body)
 	if err != nil {
+		log.Fatal(err)
+	}
+	if err := resp.Body.Close(); err != nil {
 		log.Fatal(err)
 	}
 }
