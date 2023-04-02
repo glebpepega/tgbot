@@ -1,28 +1,60 @@
 package update
 
+import (
+	"log"
+	"net/http"
+
+	"github.com/glebpepega/goodvibesbot/encoder"
+	"github.com/glebpepega/goodvibesbot/link"
+)
+
 type UpdateResponse struct {
 	Result []Update
 }
 
 type Update struct {
-	Update_id int
-	Message   Message
+	Update_id      int
+	Message        Message
+	Callback_Query CallbackQuery
 }
 
 type Message struct {
-	Chat     Chat
-	Text     string
-	Entities []Entity
+	Chat Chat
+	Text string
 }
 
 type Chat struct {
-	Id int
+	ID int
 }
 
-type Entity struct {
-	Type string
+type CallbackQuery struct {
+	ID   string
+	From User
+}
+
+type User struct {
+	ID         int
+	Is_Bot     bool
+	First_Name string
+}
+
+type CallbackQueryAnswer struct {
+	Callback_query_id string `json:"callback_query_id"`
+	Text              string `json:"text"`
 }
 
 func NewResponse() *UpdateResponse {
 	return &UpdateResponse{}
+}
+
+func (cq *CallbackQuery) Answer() {
+	cbqa := CallbackQueryAnswer{
+		Callback_query_id: cq.ID,
+		Text:              "🥰",
+	}
+	body := encoder.EncodeToJSONBuffer(cbqa)
+	_, err := http.Post(link.Link()+"/answerCallbackQuery", "application/json", body)
+	if err != nil {
+		log.Fatal(err)
+	}
 }
