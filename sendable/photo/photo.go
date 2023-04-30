@@ -51,7 +51,7 @@ func (p *Photo) Send(chatID int) {
 	body := encoder.EncodeToJSONBuffer(p)
 	_, err := http.Post(link.Link()+"/sendPhoto", "application/json", body)
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
 	}
 }
 
@@ -59,11 +59,11 @@ func getQuoteFromInternet() string {
 	quote := []Quote{}
 	jsonResp, err := http.Get("https://api.breakingbadquotes.xyz/v1/quotes")
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
 	}
 	defer func() {
 		if err := jsonResp.Body.Close(); err != nil {
-			log.Fatal(err)
+			log.Println(err)
 		}
 	}()
 	decoder.DecodeFromJSON(jsonResp.Body, &quote)
@@ -75,11 +75,11 @@ func getImgFromInternet() string {
 	var url []string
 	jsonResp, err := http.Get("http://shibe.online/api/shibes?count=1&urls=true&httpsUrls=true")
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
 	}
 	defer func() {
 		if err := jsonResp.Body.Close(); err != nil {
-			log.Fatal(err)
+			log.Println(err)
 		}
 	}()
 	decoder.DecodeFromJSON(jsonResp.Body, &url)

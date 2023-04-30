@@ -8,10 +8,6 @@ import (
 	"github.com/glebpepega/goodvibesbot/link"
 )
 
-type UpdateResponse struct {
-	Result []Update
-}
-
 type Update struct {
 	Update_id      int
 	Message        Message
@@ -43,8 +39,8 @@ type CallbackQueryAnswer struct {
 	Text              string `json:"text"`
 }
 
-func NewResponse() *UpdateResponse {
-	return &UpdateResponse{}
+func NewUpdate() *Update {
+	return &Update{}
 }
 
 func (cq *CallbackQuery) Answer() {
@@ -55,11 +51,11 @@ func (cq *CallbackQuery) Answer() {
 	body := encoder.EncodeToJSONBuffer(cbqa)
 	resp, err := http.Post(link.Link()+"/answerCallbackQuery", "application/json", body)
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
 	}
 	defer func() {
 		if err := resp.Body.Close(); err != nil {
-			log.Fatal(err)
+			log.Println(err)
 		}
 	}()
 }

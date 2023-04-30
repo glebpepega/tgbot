@@ -9,7 +9,7 @@ import (
 func EncodeToJSONBuffer(obj any) *bytes.Buffer {
 	json, err := json.Marshal(obj)
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
 	}
 	body := bytes.NewBuffer(json)
 	return body

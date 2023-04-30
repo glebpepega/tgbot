@@ -23,11 +23,11 @@ func (t *Text) Send(chatID int, message string) {
 	body := encoder.EncodeToJSONBuffer(t)
 	resp, err := http.Post(link.Link()+"/sendMessage", "application/json", body)
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
 	}
 	defer func() {
 		if err := resp.Body.Close(); err != nil {
-			log.Fatal(err)
+			log.Println(err)
 		}
 	}()
 }
